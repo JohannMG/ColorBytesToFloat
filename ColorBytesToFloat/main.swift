@@ -46,7 +46,7 @@ func printHelp(){
   var output = ""
   output += "Quick little app by JohannMG to make moving RBG or HEX to UI Colors faster \r\n"
   output += "Modes----------\r\n"
-  output += "btye: convert bytes (0-255) to itsfloat values\r\n"
+  output += "byte: convert bytes (0-255) to itsfloat values\r\n"
   output += "rgb: convert RRR GGG BBB into a UIColor string\r\n"
   output += "rgba: convert RRR GGG BBB AAA into a UIColor string with alpha \r\n"
   output += "hex: convert hex values #FFAF00 into UIColor string \r\n"
