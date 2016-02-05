@@ -14,6 +14,7 @@ Simple terminal tool to do just that!
 Grab the entire xcode project if you like or 
 
 Clone the repo OR just grab the terminal app here http://www.johannmg.com/downloads/ColorBytesToFloat
+*[use `chmod +x ColorBytesToFloat` to use it]*
 
 If this helps any say hi on [Twitter @johann_mg] :)
 [Twitter @johann_mg]: <https://www.twitter.com/johann_mg>
