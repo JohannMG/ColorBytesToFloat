@@ -22,23 +22,23 @@ extension Float {
 }
 // - MARK: Enums
 enum OperatingMode {
-  case ByteToFloat, RgbToUIColor, RgbaToUIColor, HexToUIColor
+  case byteToFloat, rgbToUIColor, rgbaToUIColor, hexToUIColor
 }
 
 // - MARK: Global Variables
 var response: String = ""
 var autoToClipboard = true
-var mode = OperatingMode.RgbToUIColor
-var kb = NSFileHandle.fileHandleWithStandardInput()
-var inputData: NSData?
+var mode = OperatingMode.rgbToUIColor
+var kb = FileHandle.standardInput
+var inputData: Data?
 
 // - MARK: Main Helper Functions
 func getKeyboardData(){
   
   inputData = kb.availableData
-  var tempDirtyInput = NSString(data: inputData!, encoding: NSUTF8StringEncoding) as! String
-  tempDirtyInput = tempDirtyInput.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-  response = tempDirtyInput.stringByTrimmingCharactersInSet(NSCharacterSet(charactersInString: "#"))  //for hex
+  var tempDirtyInput = NSString(data: inputData!, encoding: String.Encoding.utf8.rawValue) as! String
+  tempDirtyInput = tempDirtyInput.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+  response = tempDirtyInput.trimmingCharacters(in: CharacterSet(charactersIn: "#"))  //for hex
 }
 
 func printHelp(){
@@ -64,10 +64,10 @@ func printHelp(){
   print(output)
 }
 
-func toPasteboard(toPaste : String){
-  let pb = NSPasteboard.generalPasteboard()
+func toPasteboard(_ toPaste : String){
+  let pb = NSPasteboard.general()
   pb.clearContents()
-  pb.writeObjects([toPaste])
+  pb.writeObjects([toPaste as NSPasteboardWriting])
 }
 
 // - MARK: Begin application
@@ -86,22 +86,22 @@ while response != "q" && response != "quit"{
     
   //check for mode changes
   case "byte":
-    mode = .ByteToFloat
+    mode = .byteToFloat
     print("Set mode to Byte to Float. Input integers")
     continue
     
   case "rgb":
-    mode = .RgbToUIColor
+    mode = .rgbToUIColor
     print("Set mode to RGB, enter input as  RRR GGG BBB")
     continue
     
   case "rgba":
-    mode = .RgbaToUIColor
+    mode = .rgbaToUIColor
     print("Set mode to RGBA, enter input as  RRR GGG BBB AAA")
     continue
     
   case "hex":
-    mode = .HexToUIColor
+    mode = .hexToUIColor
     print("Set mode to Hex, enter input as #FAFF00, hash optional")
     continue
     
@@ -130,13 +130,13 @@ while response != "q" && response != "quit"{
   var uicolorOutput = ""
   switch( mode ){
 
-  case .ByteToFloat:
+  case .byteToFloat:
     uicolorOutput = "\(response.floatVal / 255.0)"
     print (uicolorOutput)
     if autoToClipboard { toPasteboard(uicolorOutput) }
     
-  case .RgbToUIColor:
-    let varArray:[String] = response.componentsSeparatedByCharactersInSet(NSCharacterSet(charactersInString: " ,./"))
+  case .rgbToUIColor:
+    let varArray:[String] = response.components(separatedBy: CharacterSet(charactersIn: " ,./"))
     if varArray.count < 3 {
       print ("Too few inputs, should be in format `RRR GGG BBB`")
       break
@@ -147,8 +147,8 @@ while response != "q" && response != "quit"{
     print (uicolorOutput)
     if autoToClipboard { toPasteboard(uicolorOutput) }
     
-  case .RgbaToUIColor:
-    let varArray:[String] = response.componentsSeparatedByCharactersInSet(NSCharacterSet(charactersInString: " ,./"))
+  case .rgbaToUIColor:
+    let varArray:[String] = response.components(separatedBy: CharacterSet(charactersIn: " ,./"))
     if varArray.count < 4 {
       print ("Too few inputs, should be in format `RRR GGG BBB AAA`")
       break
@@ -160,15 +160,15 @@ while response != "q" && response != "quit"{
     print(uicolorOutput)
     if autoToClipboard { toPasteboard(uicolorOutput) }
   
-  case .HexToUIColor:
+  case .hexToUIColor:
     if response.characters.count != 6 {
       print("Wrong RGB hexadecimal input, should be `RRGGBB`")
       break
     }
     //get string bits
-    let rr = response.substringWithRange(Range<String.Index>(start: response.startIndex, end: response.startIndex.advancedBy(2) ))
-    let gg = response.substringWithRange(Range<String.Index>(start: response.startIndex.advancedBy(2), end: response.startIndex.advancedBy(4) ))
-    let bb = response.substringWithRange(Range<String.Index>(start: response.startIndex.advancedBy(4), end: response.startIndex.advancedBy(6) ))
+    let rr = response.substring(with: (response.startIndex ..< response.characters.index(response.startIndex, offsetBy: 2)))
+    let gg = response.substring(with: (response.characters.index(response.startIndex, offsetBy: 2) ..< response.characters.index(response.startIndex, offsetBy: 4)))
+    let bb = response.substring(with: (response.characters.index(response.startIndex, offsetBy: 4) ..< response.characters.index(response.startIndex, offsetBy: 6)))
     
     //get values from that
     let rrInt = Float ( UInt8(strtoul(rr, nil, 16)) )
